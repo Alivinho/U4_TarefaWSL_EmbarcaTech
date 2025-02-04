@@ -1,0 +1,5 @@
+[wokwi]
+version = 1
+firmware = '../build/U4_TarefaWSL_EmbarcaTech.uf2'
+elf = '../build/U4_TarefaWSL_EmbarcaTech.elf'
+
