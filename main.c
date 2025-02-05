@@ -54,6 +54,15 @@ int main() {
     //animacao_1(pio, sm, numero_atual);
 
     while (1){
+        if(stdio_usb_connected()){
+            char c;
+
+            scanf("%c", &c);
+
+            if (c == 'r'){
+                gpio_put(LED_RED_PIN, 1);
+            }
+        }
 
     }
 
