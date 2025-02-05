@@ -9,6 +9,20 @@
 #define IS_RGBW false
 #define NUM_PIXELS 25
 
+extern void animacao_1(PIO pio, uint sm, uint numero_atual);
+
+
+static volatile uint numero_atual = 0;   // Variável para armazenar o número atual
+
+const uint32_t BRIGHTNESS = 0xCC; // Ajusta o brilho aqui (0x00 para apagado, 0xFF para brilho máximo)
+
+// Acionamento da matriz de LEDs - ws2812b
+void desenhar_matriz(PIO pio, uint sm, const uint32_t *desenho) {
+    for (int i = 0; i < NUM_PIXELS; i++) { // Aplica a cor ao padrão
+       pio_sm_put_blocking(pio, sm, (desenho[24-i]) * BRIGHTNESS); 
+    }
+}
+
 
 int main() {
     stdio_init_all();
@@ -20,7 +34,13 @@ int main() {
 
     ws2812_program_init(pio, sm, offset, WS2812_PIN, 800000, IS_RGBW);
 
-    while (1) {}
+
+
+    animacao_1(pio, sm, numero_atual);
+
+    while (1){
+
+    }
 
     return 0;
 }
