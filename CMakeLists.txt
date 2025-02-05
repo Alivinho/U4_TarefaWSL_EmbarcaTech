@@ -37,6 +37,7 @@ pico_sdk_init()
 
 add_executable(U4_TarefaWSL_EmbarcaTech main.c
     Animation/numbersAnimation.c
+    includes/ssd1306.c
 
 )
 
@@ -56,6 +57,7 @@ target_link_libraries(U4_TarefaWSL_EmbarcaTech
         hardware_pio
         hardware_clocks
         hardware_adc
+        hardware_i2c
 
         
 )
