@@ -35,7 +35,10 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(U4_TarefaWSL_EmbarcaTech main.c )
+add_executable(U4_TarefaWSL_EmbarcaTech main.c
+    Animation/numbersAnimation.c
+
+)
 
 pico_set_program_name(U4_TarefaWSL_EmbarcaTech "U4_TarefaWSL_EmbarcaTech")
 pico_set_program_version(U4_TarefaWSL_EmbarcaTech "0.1")
@@ -52,6 +55,8 @@ target_link_libraries(U4_TarefaWSL_EmbarcaTech
         pico_stdlib
         hardware_pio
         hardware_clocks
+        hardware_adc
+
         
 )
 
