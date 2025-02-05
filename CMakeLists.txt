@@ -44,7 +44,7 @@ pico_set_program_name(U4_TarefaWSL_EmbarcaTech "U4_TarefaWSL_EmbarcaTech")
 pico_set_program_version(U4_TarefaWSL_EmbarcaTech "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(U4_TarefaWSL_EmbarcaTech 0)
+pico_enable_stdio_uart(U4_TarefaWSL_EmbarcaTech 1)
 pico_enable_stdio_usb(U4_TarefaWSL_EmbarcaTech 1)
 
 pico_generate_pio_header(U4_TarefaWSL_EmbarcaTech  ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
