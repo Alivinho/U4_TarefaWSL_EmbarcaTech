@@ -34,7 +34,7 @@
 #define I2C_SCL 15
 #define endereco 0x3C
 
-#define DEBOUNCE_DELAY_MS 200  
+#define DEBOUNCE_DELAY 200  
 
 volatile uint32_t last_interrupt_timeA = 0;
 volatile uint32_t last_interrupt_timeB = 0;
@@ -43,8 +43,7 @@ extern void animacao_1(PIO pio, uint sm, uint numero_atual);
 
 // Protótipos das Funções utilizadas
 void initLedButtons();
-void button_a_callback(uint gpio, uint32_t events);
-void button_b_callback(uint gpio, uint32_t events);
+void button_callback(uint gpio, uint32_t events) ;
 
 const uint32_t BRIGHTNESS = 0xCC; // Ajusta o brilho aqui (0x00 para apagado, 0xFF para brilho máximo)
 
@@ -66,6 +65,8 @@ int main() {
     uart_init(UART_ID, BAUD_RATE);
     gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
+    //stdio_set_driver_enabled(&stdio_uart, true);
+
     
     // Configuração do PIO e da Matriz de LED
     PIO pio = pio0;
@@ -88,13 +89,13 @@ int main() {
     ssd1306_fill(&ssd, false);
     ssd1306_send_data(&ssd);
 
-    gpio_set_irq_enabled_with_callback(BUTTON_A_PIN, GPIO_IRQ_EDGE_FALL, true, &button_a_callback);
-    gpio_set_irq_enabled_with_callback(BUTTON_B_PIN, GPIO_IRQ_EDGE_FALL, true, &button_b_callback);
+    gpio_set_irq_enabled_with_callback(BUTTON_A_PIN, GPIO_IRQ_EDGE_FALL, true, &button_callback);
+    gpio_set_irq_enabled(BUTTON_B_PIN, GPIO_IRQ_EDGE_FALL, true);
 
-
-    
 
     bool cor = true;
+
+    uart_putc_raw(UART_ID, 'A');
 
     while (true){
         cor = !cor;
@@ -147,31 +148,34 @@ void initLedButtons(){
     gpio_set_dir(LED_GREEN_PIN, GPIO_OUT);
 }
 
-void button_a_callback(uint gpio, uint32_t events) {
-    uint32_t tempo_atual = to_ms_since_boot(get_absolute_time());
-    if (tempo_atual - last_interrupt_timeA < DEBOUNCE_DELAY_MS) {
-        return; // Ignora eventos dentro do tempo de debounce
-    }
-
-    last_interrupt_timeA = tempo_atual;
-
-    static bool led_state = false;  // Variável que armazena o estado do LED
-    led_state = !led_state;         // Alterna entre ligado e desligado
-    gpio_put(LED_GREEN_PIN, led_state); 
-
-    //gpio_put(LED_GREEN_PIN, 1);
-
-}
-
-void button_b_callback(uint gpio, uint32_t events) {
+void button_callback(uint gpio, uint32_t events) {
     uint32_t tempo_atual = to_ms_since_boot(get_absolute_time());
 
-    if (tempo_atual - last_interrupt_timeB < DEBOUNCE_DELAY_MS) {
-        return; // Ignora eventos dentro do tempo de debounce
-    }
-    last_interrupt_timeB = tempo_atual;
+    if (gpio == BUTTON_A_PIN) {
+        if (tempo_atual - last_interrupt_timeA < DEBOUNCE_DELAY ) return;
+        last_interrupt_timeA = tempo_atual;
+        static bool led_state_a = false;
+        led_state_a = !led_state_a;
+        gpio_put(LED_GREEN_PIN, led_state_a);
 
-    static bool led_state = false;  // Variável que armazena o estado do LED
-    led_state = !led_state;         // Alterna entre ligado e desligado
-    gpio_put(LED_BLUE_PIN, led_state);    // Acende o LED azul
+        // Mensagem de status do LED Verde
+        //char mensagem[50];
+        //snprintf(mensagem, sizeof(mensagem), "Botão A pressionado: LED Verde %s\n", led_state_a ? "LIGADO" : "DESLIGADO");
+        printf("\nBotão A pressionado: LED Verde %s\n", led_state_a ? "LIGADO" : "DESLIGADO");
+
+        // Enviar mensagem via UART
+        //uart_puts(UART_ID, mensagem);
+
+    }
+    else if (gpio == BUTTON_B_PIN) {
+        if (tempo_atual - last_interrupt_timeB < DEBOUNCE_DELAY ) return;
+        last_interrupt_timeB = tempo_atual;
+        static bool led_state_b = false;
+        led_state_b = !led_state_b;
+        gpio_put(LED_BLUE_PIN, led_state_b);
+
+        printf("\nBotão B pressionado: LED Azul %s\n", led_state_b ? "LIGADO" : "DESLIGADO");
+
+    }
 }
+
