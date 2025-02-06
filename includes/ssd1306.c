@@ -164,7 +164,7 @@ void ssd1306_draw_char(ssd1306_t *ssd, char c, uint8_t x, uint8_t y)
   }
   else if (c >= 'a' && c <= 'z') // Adiciona suporte para letras minúsculas
   {
-    index = (c - 'a' + 11 + 26) * 8; // Para letras minúsculas, após as maiúsculas
+    index = (c - 'a' + 11 + 26) * 8; // Posição das letras minúsculas
   }
   else if (c >= '0' && c <= '9')
   {
