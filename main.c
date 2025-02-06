@@ -8,6 +8,12 @@
 #include "includes/ssd1306.h"
 #include "includes/font.h"
 
+// Definição dos Pinos e taxa de transmissão da  UART
+#define UART_ID uart0    
+#define BAUD_RATE 115200 
+#define UART_TX_PIN 0    
+#define UART_RX_PIN 1    
+
 // Definição de Pinos do LED RGB
 #define LED_RED_PIN 13
 #define LED_BLUE_PIN 12
@@ -28,10 +34,17 @@
 #define I2C_SCL 15
 #define endereco 0x3C
 
+#define DEBOUNCE_DELAY_MS 200  
+
+volatile uint32_t last_interrupt_timeA = 0;
+volatile uint32_t last_interrupt_timeB = 0;
+
 extern void animacao_1(PIO pio, uint sm, uint numero_atual);
 
 // Protótipos das Funções utilizadas
 void initLedButtons();
+void button_a_callback(uint gpio, uint32_t events);
+void button_b_callback(uint gpio, uint32_t events);
 
 const uint32_t BRIGHTNESS = 0xCC; // Ajusta o brilho aqui (0x00 para apagado, 0xFF para brilho máximo)
 
@@ -48,6 +61,11 @@ int main() {
     stdio_init_all();
 
     initLedButtons();
+
+    // Configuração (Inicialização) da UART
+    uart_init(UART_ID, BAUD_RATE);
+    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
     
     // Configuração do PIO e da Matriz de LED
     PIO pio = pio0;
@@ -70,8 +88,14 @@ int main() {
     ssd1306_fill(&ssd, false);
     ssd1306_send_data(&ssd);
 
+    gpio_set_irq_enabled_with_callback(BUTTON_A_PIN, GPIO_IRQ_EDGE_FALL, true, &button_a_callback);
+    gpio_set_irq_enabled_with_callback(BUTTON_B_PIN, GPIO_IRQ_EDGE_FALL, true, &button_b_callback);
+
+
+    
 
     bool cor = true;
+
     while (true){
         cor = !cor;
 
@@ -92,7 +116,7 @@ int main() {
         ssd1306_fill(&ssd, !cor); // Limpa o display
         ssd1306_rect(&ssd, 3, 3, 122, 58, cor, !cor); // Desenha um retângulo
         //ssd1306_draw_char(&ssd,'A', 8, 10);
-        ssd1306_draw_string(&ssd, "CARACTERE", 8, 10); // Desenha uma string
+        ssd1306_draw_string(&ssd, "TESTE", 8, 10); // Desenha uma string
         //ssd1306_draw_string(&ssd, "EMBARCATECH", 20, 30); // Desenha uma string
         //ssd1306_draw_string(&ssd, "PROF WILTON", 15, 48); // Desenha uma string      
         ssd1306_send_data(&ssd); // Atualiza o display
@@ -104,6 +128,7 @@ int main() {
 }
 
 void initLedButtons(){
+
     gpio_init(BUTTON_A_PIN);
     gpio_set_dir(BUTTON_A_PIN, GPIO_IN);
     gpio_pull_up(BUTTON_A_PIN);
@@ -114,9 +139,39 @@ void initLedButtons(){
 
     gpio_init(LED_RED_PIN);
     gpio_set_dir(LED_RED_PIN, GPIO_OUT);
+
     gpio_init(LED_BLUE_PIN);
     gpio_set_dir(LED_BLUE_PIN, GPIO_OUT);
+    
     gpio_init(LED_GREEN_PIN);
     gpio_set_dir(LED_GREEN_PIN, GPIO_OUT);
 }
 
+void button_a_callback(uint gpio, uint32_t events) {
+    uint32_t tempo_atual = to_ms_since_boot(get_absolute_time());
+    if (tempo_atual - last_interrupt_timeA < DEBOUNCE_DELAY_MS) {
+        return; // Ignora eventos dentro do tempo de debounce
+    }
+
+    last_interrupt_timeA = tempo_atual;
+
+    static bool led_state = false;  // Variável que armazena o estado do LED
+    led_state = !led_state;         // Alterna entre ligado e desligado
+    gpio_put(LED_GREEN_PIN, led_state); 
+
+    //gpio_put(LED_GREEN_PIN, 1);
+
+}
+
+void button_b_callback(uint gpio, uint32_t events) {
+    uint32_t tempo_atual = to_ms_since_boot(get_absolute_time());
+
+    if (tempo_atual - last_interrupt_timeB < DEBOUNCE_DELAY_MS) {
+        return; // Ignora eventos dentro do tempo de debounce
+    }
+    last_interrupt_timeB = tempo_atual;
+
+    static bool led_state = false;  // Variável que armazena o estado do LED
+    led_state = !led_state;         // Alterna entre ligado e desligado
+    gpio_put(LED_BLUE_PIN, led_state);    // Acende o LED azul
+}
