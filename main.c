@@ -43,7 +43,7 @@ extern void animacao_1(PIO pio, uint sm, uint numero_atual);
 
 // Protótipos das Funções utilizadas
 void initLedButtons();
-void button_callback(uint gpio, uint32_t events) ;
+void button_callback(uint gpio, uint32_t events);
 
 const uint32_t BRIGHTNESS = 0xCC; // Ajusta o brilho aqui (0x00 para apagado, 0xFF para brilho máximo)
 
@@ -97,6 +97,16 @@ int main() {
 
     uart_putc_raw(UART_ID, 'A');
 
+    // Limpa o display
+    ssd1306_fill(&ssd, false);
+    ssd1306_send_data(&ssd);
+
+    // Desenha o retângulo uma única vez
+    ssd1306_rect(&ssd, 3, 3, 122, 58, true, false);  // Desenha o retângulo (com cor)
+    ssd1306_send_data(&ssd);  // Atualiza o displa
+
+    
+
     while (true){
         cor = !cor;
 
@@ -111,17 +121,14 @@ int main() {
                 uint numero_atual = (uint)(caractere - '0');  // Converte diretamente o caractere para inteiro
 
                 animacao_1(pio, sm, numero_atual);
-            } 
+            }else{
+                // Exibe o caractere no display Oled
+                ssd1306_draw_char(&ssd, caractere, 64, 32);
+                ssd1306_send_data(&ssd); // Atualiza o display
+            }
         }
-        // Atualiza o conteúdo do display com animações
-        ssd1306_fill(&ssd, !cor); // Limpa o display
-        ssd1306_rect(&ssd, 3, 3, 122, 58, cor, !cor); // Desenha um retângulo
-        //ssd1306_draw_char(&ssd,'A', 8, 10);
-        ssd1306_draw_string(&ssd, "TESTE", 8, 10); // Desenha uma string
-        //ssd1306_draw_string(&ssd, "EMBARCATECH", 20, 30); // Desenha uma string
-        //ssd1306_draw_string(&ssd, "PROF WILTON", 15, 48); // Desenha uma string      
-        ssd1306_send_data(&ssd); // Atualiza o display
 
+        //ssd1306_draw_string(&ssd, "EMbARCATECH", 20, 30); // Desenha uma string        
         sleep_ms(1000);
     }
 
