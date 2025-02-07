@@ -90,7 +90,7 @@ int main() {
 
     // Desenha o retângulo uma única vez
     ssd1306_rect(&ssd, 3, 3, 122, 58, true, false);  // Desenha o retângulo (com cor)
-    ssd1306_draw_string(&ssd, "ESPERANDO...", 25, 30); // Desenha uma string        
+    ssd1306_draw_string(&ssd, "ESPERANDO", 25, 30); // Desenha uma string        
     ssd1306_send_data(&ssd);  // Atualiza o display
 
     while (true){
