@@ -48,7 +48,7 @@ void button_callback(uint gpio, uint32_t events);
 void desenhar_matriz(PIO pio, uint sm, const uint32_t *desenho);
 void exibir_caractere_no_display(char caractere);
 
-const uint32_t BRIGHTNESS = 0xCC; // Ajusta o brilho aqui (0x00 para apagado, 0xFF para brilho máximo)
+const uint32_t BRIGHTNESS = 0xCC; // Ajusta o brilho aqui 
 
 
 int main() {
@@ -111,8 +111,6 @@ int main() {
                 exibir_caractere_no_display(caractere);
             }
         }
-
-        //ssd1306_draw_string(&ssd, "EMbARCATECH", 20, 30); // Desenha uma string        
         sleep_ms(1000);
     }
 
