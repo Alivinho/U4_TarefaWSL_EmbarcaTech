@@ -1,4 +1,4 @@
-# Projeto: Controle de LEDs e Display OLED com Raspberry Pi Pico
+# Controle de LEDs e Display OLED com Raspberry Pi Pico na Placa Bitdoglab
 
 ## Descrição
 Este projeto implementa um sistema de controle utilizando o Raspberry Pi Pico, integrando uma matriz de LEDs WS2812, um display OLED SSD1306 e dois LEDs RGB, controlados por botões. A comunicação é feita via UART, permitindo a entrada de caracteres para exibição no display ou na matriz de LEDs.
@@ -31,17 +31,22 @@ Este projeto implementa um sistema de controle utilizando o Raspberry Pi Pico, i
 - **Display OLED SSD1306**:
   - SDA: GPIO 14
   - SCL: GPIO 15
-
+    
 ## Configuração e Execução
-### 1. Instalação das Dependências
-Certifique-se de que as bibliotecas necessárias estão instaladas no seu ambiente de desenvolvimento para o Raspberry Pi Pico.
+### 1. Instalar Dependências
+Certifique-se de que o **Pico SDK** e as bibliotecas necessárias estão instaladas no ambiente de desenvolvimento.
 
-### 2. Compilação e Upload
-Compile o código e faça o upload para o Raspberry Pi Pico utilizando o SDK do Pico e um ambiente como o VS Code ou o terminal.
+### 2. Compilar e Fazer o Upload
+- Utilize um ambiente como **VS Code + CMake** ou um terminal para compilar o código.
+- Converta o arquivo "main.c" para um arquivo **UF2** e transfira para o Raspberry Pi Pico.
 
-### 3. Interação
-- Envie um caractere pela UART para exibi-lo no display OLED.
-- Pressione os botões para alternar o estado dos LEDs RGB.
+### 3. Como Usar
+- **Enviar um caractere via UART** → Exibe no **display OLED**.
+- **Pressionar os botões** → Alterna o estado dos **LEDs RGB** e exibe feedback no display.
+- **Enviar um número (0-9) pela UART** → Exibe o número na **matriz de LEDs WS2812**.
+
+- Se necessário, ajuste os **endereços I2C** do display OLED no código.
+a alternar o estado dos LEDs RGB.
 - Envie um número (0-9) para exibi-lo na matriz de LEDs WS2812.
 
 
